@@ -11,13 +11,18 @@
 @interface ViewController ()
 @property (weak, nonatomic) IBOutlet UIView *trayView;
 @property (nonatomic, assign) CGPoint trayOriginalCenter;
+@property (nonatomic, assign) CGPoint trayCenterWhenOpen;
+@property (nonatomic, assign) CGPoint trayCenterWhenClosed;
 @end
 
 @implementation ViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
+    // Do any additional setup after loading the view, typically from a
+
+    self.trayCenterWhenOpen = self.trayView.center;
+    self.trayCenterWhenClosed = CGPointMake(self.trayCenterWhenOpen.x, self.trayCenterWhenOpen.y + self.trayView.frame.size.height - 20);
 }
 
 - (void)didReceiveMemoryWarning {
@@ -38,6 +43,17 @@
     } else if (sender.state == UIGestureRecognizerStateEnded) {
         NSLog(@"Gesture ended at: %@", NSStringFromCGPoint(location));
         CGPoint velocity = [sender velocityInView:self.trayView];
+        if (velocity.y > 0) {
+            NSLog(@"MOVING DOWN");
+            [UIView animateWithDuration:0.5 animations:^{
+                self.trayView.center = self.trayCenterWhenClosed;
+            }];
+        } else {
+            NSLog(@"MOVING UP");
+            [UIView animateWithDuration:0.5 animations:^{
+                self.trayView.center = self.trayCenterWhenOpen;
+            }];
+        }
     }
 }
 
